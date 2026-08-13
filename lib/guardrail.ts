@@ -61,6 +61,31 @@ function parseToAbs(s: string): ParsedNum {
   return { abs: v, ok: true };
 }
 
+/**
+ * 禁用头衔清单（AGENTS.md 铁律1：头衔只允许 市场人员/项目成员/政企客户经理）。
+ * 注意：「客户经理」是合法头衔「政企客户经理」的一部分，不得误禁。
+ */
+export const BANNED_TITLES = [
+  '项目经理', '项目主管', '项目负责人', '团队负责人',
+  '部门经理', '部门主管', '市场经理', '销售经理', '商务经理', '总监',
+];
+
+/**
+ * 头衔违规检测（铁律1 技术门禁，2026-08-13 补上）：
+ * 简历行出现禁用头衔 → 违规；否定语境（如「未担任项目经理」）属诚实表述 → 豁免。
+ */
+export function bannedTitleCheck(line: string): { banned: string[]; negated: string[] } {
+  const banned: string[] = [];
+  const negated: string[] = [];
+  for (const t of BANNED_TITLES) {
+    if (!line.includes(t)) continue;
+    const neg = new RegExp(`(未|不|非|无)[^，。；,;]{0,8}${t}`);
+    if (neg.test(line)) negated.push(t);
+    else banned.push(t);
+  }
+  return { banned, negated };
+}
+
 /** 数值化比较：绝对值相等（±1 容差，处理 70余家≈70家 的约数差异） */
 function absEqual(a: string, b: string): boolean {
   const pa = parseToAbs(a);
@@ -131,6 +156,16 @@ export function guardrail(source: SourceResume, sections: Array<{ lines: string[
       // 引用有效性（key 必须存在于 source）
       const badRefs = refs.filter((r) => !validKeys.has(r));
       const hasNumber = extractHardClaims([line]).length > 0;
+
+      // 铁律1 技术门禁：禁用头衔（如「项目经理」）→ 硬失败 reject；否定语境豁免
+      const titleCheck = bannedTitleCheck(line);
+      if (titleCheck.banned.length) {
+        checks.push({
+          line, refs, kind: 'hard', verdict: 'fail',
+          reason: `头衔违反铁律1（只允许：市场人员/项目成员/政企客户经理）: ${titleCheck.banned.join(', ')}`,
+        });
+        return;
+      }
 
       let verdict: ClaimCheck['verdict'] = 'pass';
       let reason = '';

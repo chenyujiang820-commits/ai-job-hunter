@@ -205,15 +205,14 @@ export async function call(
   // 2) 跨层降级：flash-free → mimo-free（仅 zen 端点）
   for (const fb of fallbacks) {
     try {
-      stats.fallbacks++;
       chain.push(fb);
       const result = await doCall(fb, messages, { ...opts, timeoutMs: opts.timeoutMs ?? 45_000 });
+      stats.fallbacks++;
       result.fallbackChain = [...chain];
       logEvent('scored', { job_id: '', model: result.model, endpoint: result.endpoint, degraded: true });
       return result;
     } catch (e) {
       lastErr = e as Error;
-      stats.fallbacks++;
     }
   }
 

@@ -7,7 +7,9 @@
   "scripts": {
     "test": "node --test --experimental-strip-types \"tests/*.test.ts\"",
     "build": "tsc --noEmit",
-    "start": "node --experimental-strip-types src/main.ts"
+    "scan": "python scripts/scan-boss-jobs.py",
+    "e2e": "node --experimental-strip-types scripts/e2e-one.ts",
+    "diag": "node --experimental-strip-types scripts/diag-llm.ts"
   },
   "engines": {
     "node": ">=22"

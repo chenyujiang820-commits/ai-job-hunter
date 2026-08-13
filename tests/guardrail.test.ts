@@ -113,3 +113,38 @@ test('护栏: 重复章节被标记 review', () => {
   assert.ok(dup, '应检测到重复章节');
   assert.equal(dup?.verdict, 'review');
 });
+
+// ===== 铁律1 头衔技术门禁（2026-08-13 新增）=====
+import { bannedTitleCheck, BANNED_TITLES } from '../lib/guardrail.ts';
+
+test('头衔门禁: 出现「项目经理」→ 硬失败 reject', () => {
+  const r = guardrail(source, [
+    { lines: ['担任项目经理，负责团队管理'], claims: [['exp0.duty0']] },
+  ], 'title-bad');
+  assert.equal(r.verdict, 'reject');
+  const c = r.checks.find((c) => c.reason.includes('铁律1'));
+  assert.ok(c, '应有铁律1 违规记录');
+});
+
+test('头衔门禁: 否定语境「未担任项目经理」→ 豁免放行（诚实表述）', () => {
+  const c = bannedTitleCheck('未担任正式项目经理，但深度参与项目全流程');
+  assert.equal(c.banned.length, 0);
+  assert.equal(c.negated.length, 1);
+});
+
+test('头衔门禁: 合法头衔「政企客户经理」不被误禁', () => {
+  const c = bannedTitleCheck('担任政企客户经理，走访70余家企业');
+  assert.equal(c.banned.length, 0);
+  // 全量 guardrail 应 pass（70余家 在 source）
+  const r = guardrail(source, [
+    { lines: ['担任政企客户经理，走访70余家企业'], claims: [['exp0.metric3']] },
+  ], 'title-ok');
+  assert.equal(r.verdict, 'pass');
+});
+
+test('头衔门禁: BANNED_TITLES 不含合法词根（客户经理/市场人员/项目成员）', () => {
+  assert.ok(!BANNED_TITLES.includes('客户经理'));
+  assert.ok(!BANNED_TITLES.includes('市场人员'));
+  assert.ok(!BANNED_TITLES.includes('项目成员'));
+  assert.ok(BANNED_TITLES.includes('项目经理'));
+});
