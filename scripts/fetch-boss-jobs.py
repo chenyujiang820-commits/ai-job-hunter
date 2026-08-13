@@ -16,12 +16,11 @@ scripts/fetch-boss-jobs.py — BOSS直聘岗位采集器（M2 核心）
 import sys, io, json, os, re, time, argparse, urllib.request, urllib.parse
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-BASE = r"C:/Users/15050/Desktop/Atlas/AI-job-hunter"
+# 项目根目录 = 脚本所在目录的上一级（不再硬编码绝对路径，可移植）
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # ---------- cookies 加载 ----------
-COOKIE_FILES = [
-    r"C:\Users\15050\.hermes-web-ui\upload\atlas\4a699022493d3097.json",  # 用户最近一次导出
-]
+COOKIE_FILES = []  # config/cookies/ 下最新的 .json 优先（2026-08-13 移除旧的上传目录残留）
 COOKIE_DIR = os.path.join(BASE, "config", "cookies")
 if os.path.isdir(COOKIE_DIR):
     for fn in sorted(os.listdir(COOKIE_DIR)):

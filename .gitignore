@@ -24,6 +24,9 @@ data/jobs/fetched/
 data/out/
 *.tmp
 
+# ===== 工具/Agent 内部文件 =====
+.hermes/
+
 # ===== 编译产物 =====
 dist/
 build/

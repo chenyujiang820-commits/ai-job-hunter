@@ -236,8 +236,13 @@ export function checkLegal(job: Job, profile: UserProfile): FlagId[] {
   const parsed = parseSalary(job);
   if (parsed && parsed.min * NET_SALARY_RATIO < profile.preferences.min_net_salary * 0.9) flags.push('L6');
   // L7 空壳/高风险：未认证、新注册、外包派遣（外包→review 进人审，老板裁定）
-  if (job.company_meta?.insured_count === 0 || /未认证|新注册/.test(job.company_meta?.nature ?? '')) flags.push('L7');
-  if (/外包|派遣|劳务/.test((job.employment_type ?? '') + (job.job_description ?? ''))) flags.push('L7');
+  if (
+    job.company_meta?.insured_count === 0 ||
+    /未认证|新注册/.test(job.company_meta?.nature ?? '') ||
+    /外包|派遣|劳务/.test((job.employment_type ?? '') + (job.job_description ?? ''))
+  ) {
+    flags.push('L7'); // 同一岗位只标记一次（2026-08-13 修复重复 push）
+  }
   return flags;
 }
 

@@ -11,6 +11,11 @@
  *    zen/v1 免费档当前 CreditsError（余额不足），go 端点正常。
  */
 import type { ApplicationRecord } from '../shared/schema.ts';
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+
+/** 事件审计日志路径（PRD §13.7，2026-08-13 补上落盘） */
+export const EVENTS_PATH = resolve(process.cwd(), 'data/out/applications.jsonl');
 
 export type Tier = 'T1' | 'T2';
 
@@ -63,12 +68,18 @@ export const stats: LLMStats = {
   errors: 0,
 };
 
-/** 简易事件记录（落 applications.jsonl，PRD §13.7） */
+/** 事件记录：内存 + 落盘 applications.jsonl（PRD §13.7） */
 const events: ApplicationRecord[] = [];
 export function getEvents(): ApplicationRecord[] { return events; }
 function logEvent(event: ApplicationRecord['event'], payload: Record<string, unknown>) {
   const jid = typeof payload.job_id === 'string' ? payload.job_id : '';
-  events.push({ ts: new Date().toISOString(), event, job_id: jid, payload });
+  const rec: ApplicationRecord = { ts: new Date().toISOString(), event, job_id: jid, payload };
+  events.push(rec);
+  // 落盘（失败不阻塞主流程，仅告警）
+  try {
+    mkdirSync(resolve(EVENTS_PATH, '..'), { recursive: true });
+    appendFileSync(EVENTS_PATH, JSON.stringify(rec) + '\n', 'utf-8');
+  } catch { /* 审计日志写失败不影响业务 */ }
 }
 
 /** 按端点返回对应 key（主=TokenRhythm，兜底=DeepSeek 直连） */

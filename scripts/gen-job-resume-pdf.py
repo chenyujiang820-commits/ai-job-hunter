@@ -6,7 +6,8 @@
 import sys, io, html, os, subprocess, re
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-BASE = r"C:/Users/15050/Desktop/Atlas/AI-job-hunter"
+# 项目根目录 = 脚本所在目录的上一级（不再硬编码绝对路径，可移植）
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 job_id = sys.argv[1] if len(sys.argv) > 1 else "boss-06"
 txt_path = os.path.join(BASE, "data/out", f"{job_id}-resume.txt")
 with open(txt_path, encoding="utf-8") as f:

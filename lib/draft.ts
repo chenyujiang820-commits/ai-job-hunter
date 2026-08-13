@@ -41,7 +41,7 @@ function buildFactSheet(source: SourceResume): string {
     e.metrics.slice(0, 5).forEach((m, j) => parts.push(`[exp${i}.metric${j}]${m.value}(${m.description.slice(0, 30)})`));
     if (e.education) {
       parts.push(`[edu]${e.education.school}|${e.education.major}|${e.education.period}|GPA:${e.education.gpa ?? ''}`);
-      e.education.honors.slice(0, 3).forEach((h) => parts.push(`[honor]${h}`));
+      e.education.honors.slice(0, 3).forEach((h, j) => parts.push(`[honor${j}]${h}`));
     }
   }
   parts.push(`禁用:${source.retracted_claims.join('；').slice(0, 120)}`);

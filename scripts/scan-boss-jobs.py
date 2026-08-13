@@ -12,7 +12,8 @@ scripts/scan-boss-jobs.py — M2 一键扫描：采集岗位 → 评分 → 排�
 import sys, io, json, os, time, subprocess, argparse
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-BASE = r"C:/Users/15050/Desktop/Atlas/AI-job-hunter"
+# 项目根目录 = 脚本所在目录的上一级（不再硬编码绝对路径，可移植）
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def main():
     ap = argparse.ArgumentParser(description="BOSS岗位一键扫描+评分")

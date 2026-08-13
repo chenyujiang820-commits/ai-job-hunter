@@ -4,8 +4,8 @@
 import json, sys, io, html, os
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-
-BASE = r"C:/Users/15050/Desktop/Atlas/AI-job-hunter"
+# 项目根目录 = 脚本所在目录的上一级（不再硬编码绝对路径，可移植）
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 with open(os.path.join(BASE, "data/source_resume.json"), encoding="utf-8") as f:
     src = json.load(f)
 
