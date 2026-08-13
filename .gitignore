@@ -1,0 +1,30 @@
+# ===== 依赖 =====
+node_modules/
+*.log
+npm-debug.log*
+
+# ===== 密钥与凭证（⚠️ 严禁提交）=====
+.env
+.env.*
+!.env.example
+config/cookies/
+*.key
+*.pem
+secrets/
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+*.swp
+
+# ===== 临时文件 =====
+data/jobs/scan-tmp.json
+scripts/scan-score.ts
+data/jobs/fetched/
+data/out/
+*.tmp
+
+# ===== 编译产物 =====
+dist/
+build/
+*.tsbuildinfo

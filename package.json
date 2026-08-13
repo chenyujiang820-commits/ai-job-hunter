@@ -1,0 +1,19 @@
+{
+  "name": "ai-job-hunter",
+  "version": "0.1.0",
+  "description": "AI 求职框架（BOSS 直聘 · 半自动）— M1 智能层（Hermes 版）",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test --experimental-strip-types \"tests/*.test.ts\"",
+    "build": "tsc --noEmit",
+    "start": "node --experimental-strip-types src/main.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^5.5.0"
+  }
+}
